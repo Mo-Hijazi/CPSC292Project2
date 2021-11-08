@@ -58,125 +58,22 @@ malaria$Entity <- factor(malaria$Entity)
 malaria <- clean_names(malaria)
 malaria <- subset(malaria, select = -2) %>% 
   na.omit(malaria)
-malaria2003 <- malaria
-malaria1990 <- malaria
-malaria1991 <- malaria
-malaria1992 <- malaria
-malaria1993 <- malaria
-malaria1994 <- malaria
-malaria1995 <- malaria
-malaria1996 <- malaria
-malaria1997 <- malaria
-malaria1998 <- malaria
-malaria1999 <- malaria
-malaria2000 <- malaria
-malaria2001 <- malaria
-malaria2002 <- malaria
-malaria2003 <- malaria
-malaria2004 <- malaria
-malaria2005 <- malaria
-malaria2006 <- malaria
-malaria2007 <- malaria
-malaria2008 <- malaria
-malaria2009 <- malaria
-malaria2010 <- malaria
-malaria2011 <- malaria
-malaria2012 <- malaria
-malaria2013 <- malaria
-malaria2014 <- malaria
-malaria2015 <- malaria
-malaria2016 <- malaria
-malaria2017 <- malaria
 
-malaria1990 <- malaria1990[malaria1990$year=="1990",]
-rownames(malaria1990) = seq(length=nrow(malaria1990))
-
-malaria1991 <- malaria1991[malaria1991$year=="1991",]
-rownames(malaria1991) = seq(length=nrow(malaria1991))
-
-malaria1992 <- malaria1992[malaria1992$year=="1992",]
-rownames(malaria1992) = seq(length=nrow(malaria1992))
-
-malaria1993 <- malaria1993[malaria1993$year=="1993",]
-rownames(malaria1993) = seq(length=nrow(malaria1993))
-
-malaria1994 <- malaria1994[malaria1994$year=="1994"]
-rownames(malaria1994) = seq(length=nrow(malaria1994))
-
-malaria1995 <- malaria1995[malaria1995$year=="1995",]
-rownames(malaria1995) = seq(length=nrow(malaria1995))
-
-malaria1996 <- malaria1996[malaria1996$year=="1996",]
-rownames(malaria1996) = seq(length=nrow(malaria1996))
-
-malaria1997 <- malaria1997[malaria1997$year=="1997",]
-rownames(malaria1997) = seq(length=nrow(malaria1997))
-
-malaria1998 <- malaria1998[malaria1998$year=="1998",]
-rownames(malaria1999) = seq(length=nrow(malaria1999))
-
-malaria1999 <- malaria1999[malaria1999$year=="1999",]
-rownames(malaria1999) = seq(length=nrow(malaria1999))
-
-malaria2000 <- malaria2000[malaria2000$year=="2000",]
-rownames(malaria2000) = seq(length=nrow(malaria2000))
-
-malaria2001 <- malaria2001[malaria2001$year=="2001",]
-rownames(malaria2001) = seq(length=nrow(malaria2001))
-
-malaria2002 <- malaria2002[malaria2002$year=="2002",]
-rownames(malaria2002) = seq(length=nrow(malaria2002))
-
-malaria2003 <- malaria2003[malaria2003$year=="2003",]
-rownames(malaria2003) = seq(length=nrow(malaria2003))
-
-malaria2004 <- malaria2004[malaria2004$year=="2004",]
-rownames(malaria2004) = seq(length=nrow(malaria2004))
-
-malaria2005 <- malaria2005[malaria2005$year=="2005",]
-rownames(malaria2005) = seq(length=nrow(malaria2005))
-
-malaria2006 <- malaria2006[malaria2006$year=="2006",]
-rownames(malaria2006) = seq(length=nrow(malaria2006))
-
-malaria2007 <- malaria2007[malaria2007$year=="2007",]
-rownames(malaria2007) = seq(length=nrow(malaria2007))
-
-malaria2008 <- malaria2008[malaria2008$year=="2008",]
-rownames(malaria2008) = seq(length=nrow(malaria2008))
-
-malaria2009 <- malaria2009[malaria2009$year=="2009",]
-rownames(malaria2009) = seq(length=nrow(malaria2009))
-
-malaria2010 <- malaria2010[malaria2010$year=="2010",]
-rownames(malaria2010) = seq(length=nrow(malaria2010))
-
-malaria2011 <- malaria2011[malaria2011$year=="2011",]
-rownames(malaria2011) = seq(length=nrow(malaria2011))
-
-malaria2012 <- malaria2012[malaria2012$year=="2012",]
-rownames(malaria2012) = seq(length=nrow(malaria2012))
-
-malaria2013 <- malaria2013[malaria2013$year=="2013",]
-rownames(malaria2013) = seq(length=nrow(malaria2013))
-
-malaria2014 <- malaria2014[malaria2014$year=="2014",]
-rownames(malaria2014) = seq(length=nrow(malaria2014))
-
-malaria2015 <- malaria2015[malaria2015$year=="2015",]
-rownames(malaria2015) = seq(length=nrow(malaria2015))
-
-malaria2016 <- malaria2016[malaria2016$year=="2016",]
-rownames(malaria2016) = seq(length=nrow(malaria2016))
-
-malaria2017 <- malaria2017[malaria2017$year=="2017",]
-rownames(malaria2017) = seq(length=nrow(malaria2017))
-
+for(i in 1990:2017){
+  #assign(paste0("malaria",i),malaria[malaria$year==i,])
+  clean.malaria <- malaria[malaria$year==i,]
+  rownames(clean.malaria) <- seq(length=nrow(clean.malaria))
+  malaria.all <- rowSums(clean.malaria[1:230,3:7])
+  assign(paste0("malaria",i), clean.malaria)
+}
 ```
 
 Creating a data frame with all age groups combined:
 ```{r, include=T}
 #combining all column of death by age into 1 column.
+for(i in 1990:2017) 
+ paste0("malaria.all.",i) rowSums(paste0("malaria",i,"[1:230,3:7]"))   
+
 malaria.all.1990 <- rowSums(malaria1990[1:230,3:7])
 malaria.all.1991 <- rowSums(malaria1991[1:230,3:7])
 malaria.all.1992 <- rowSums(malaria1992[1:230,3:7])
@@ -240,6 +137,15 @@ malaria.all.2016<- cbind(malaria.country,malaria.all.2016)
 malaria.all.2017<- cbind(malaria.country,malaria.all.2017)
 
 #Renaming column names.
+column.names <- function(dataframename){
+  names(dataframename)[2] <- "death"
+  names(dataframename)[1] <- "region"
+}
+
+column.names("malaria.all.1990")
+
+
+
 names(malaria.all.1990)[2] <- "deaths"
 names(malaria.all.1990)[1] <- "region"
 
@@ -330,7 +236,6 @@ names(malaria.all)[1] <- "region"
 ```
 
 Combining world map data with my data to create visual:
-*(WARNING: TAKES ALL NIGHT TO LOAD)*
 ```{r echo=FALSE}
 #Leading in map data (lat and long values).
 mapdata <- map_data("world")
