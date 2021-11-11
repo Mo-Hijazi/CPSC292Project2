@@ -60,120 +60,18 @@ malaria <- subset(malaria, select = -2) %>%
   na.omit(malaria)
 
 for(i in 1990:2017){
-  #assign(paste0("malaria",i),malaria[malaria$year==i,])
-  clean.malaria <- malaria[malaria$year==i,]
-  rownames(clean.malaria) <- seq(length=nrow(clean.malaria))
-  clean.malaria <- rowSums(clean.malaria[1:230,3:7])
-  malaria.all.forloop <- assign(paste0("malaria.all.",i), clean.malaria)
-  malaria.country <- data.frame(malaria[,1])
-  assign(paste0("malaria.all.",i),cbind(malaria.country,malaria.all.forloop))
+  clean.malaria <- malaria[malaria$year==i,] #Isolating specific year
+  rownames(clean.malaria) <- seq(length=nrow(clean.malaria)) #Renumbering rows
+  clean.malaria <- rowSums(clean.malaria[1:230,3:7]) #Summing up the columns for each country. 
+  malaria.all.forloop <- assign(paste0("malaria.all.",i), clean.malaria) 
+  malaria.country <- data.frame("region" = malaria[,1], "deaths" = malaria.all.forloop) 
+  assign(paste0("malaria.all.",i),malaria.country) #combining the data with a df of countries.
 }
+
 malaria.all <- rowSums(malaria[1:6440,2:5])
 malaria.all <- cbind(malaria.country,malaria.all)
-```
-
-Creating a data frame with all age groups combined:
-```{r, include=T}
-
-#creating data frame with the country names and binding it with the death sums.
-
-#Renaming column names.
-column.names <- function(dataframename){
-  names(dataframename)[2] <- "death"
-  names(dataframename)[1] <- "region"
-}
-
-column.names("malaria.all.1990")
-
-
-
-names(malaria.all.1990)[2] <- "deaths"
-names(malaria.all.1990)[1] <- "region"
-
-names(malaria.all.1991)[2] <- "deaths"
-names(malaria.all.1991)[1] <- "region"
-
-names(malaria.all.1992)[2] <- "deaths"
-names(malaria.all.1992)[1] <- "region"
-
-names(malaria.all.1993)[2] <- "deaths"
-names(malaria.all.1993)[1] <- "region"
-
-names(malaria.all.1994)[2] <- "deaths"
-names(malaria.all.1994)[1] <- "region"
-
-names(malaria.all.1995)[2] <- "deaths"
-names(malaria.all.1995)[1] <- "region"
-
-names(malaria.all.1996)[2] <- "deaths"
-names(malaria.all.1996)[1] <- "region"
-
-names(malaria.all.1997)[2] <- "deaths"
-names(malaria.all.1997)[1] <- "region"
-
-names(malaria.all.1998)[2] <- "deaths"
-names(malaria.all.1998)[1] <- "region"
-
-names(malaria.all.1999)[2] <- "deaths"
-names(malaria.all.1999)[1] <- "region"
-
-names(malaria.all.2000)[2] <- "deaths"
-names(malaria.all.2000)[1] <- "region"
-
-names(malaria.all.2001)[2] <- "deaths"
-names(malaria.all.2001)[1] <- "region"
-
-names(malaria.all.2002)[2] <- "deaths"
-names(malaria.all.2002)[1] <- "region"
-
-names(malaria.all.2003)[2] <- "deaths"
-names(malaria.all.2003)[1] <- "region"
-
-names(malaria.all.2004)[2] <- "deaths"
-names(malaria.all.2004)[1] <- "region"
-
-names(malaria.all.2005)[2] <- "deaths"
-names(malaria.all.2005)[1] <- "region"
-
-names(malaria.all.2006)[2] <- "deaths"
-names(malaria.all.2006)[1] <- "region"
-
-names(malaria.all.2007)[2] <- "deaths"
-names(malaria.all.2007)[1] <- "region"
-
-names(malaria.all.2008)[2] <- "deaths"
-names(malaria.all.2008)[1] <- "region"
-
-names(malaria.all.2009)[2] <- "deaths"
-names(malaria.all.2009)[1] <- "region"
-
-names(malaria.all.2010)[2] <- "deaths"
-names(malaria.all.2010)[1] <- "region"
-
-names(malaria.all.2011)[2] <- "deaths"
-names(malaria.all.2011)[1] <- "region"
-
-names(malaria.all.2012)[2] <- "deaths"
-names(malaria.all.2012)[1] <- "region"
-
-names(malaria.all.2013)[2] <- "deaths"
-names(malaria.all.2013)[1] <- "region"
-
-names(malaria.all.2014)[2] <- "deaths"
-names(malaria.all.2014)[1] <- "region"
-
-names(malaria.all.2015)[2] <- "deaths"
-names(malaria.all.2015)[1] <- "region"
-
-names(malaria.all.2016)[2] <- "deaths"
-names(malaria.all.2016)[1] <- "region"
-
-names(malaria.all.2017)[2] <- "deaths"
-names(malaria.all.2017)[1] <- "region"
-
 names(malaria.all)[2] <- "deaths"
 names(malaria.all)[1] <- "region"
-
 ```
 
 Combining world map data with my data to create visual:
