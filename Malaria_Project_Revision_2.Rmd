@@ -21,19 +21,19 @@ library(viridisLite)
 library(maps)
 library(tidyverse)
 library(scales)
-library(gganimate)
 library(gifski)
 library(dplyr)
-library(gapminder)
 library(ggthemes)
 library(readr)
 library(magick)
 library(magrittr)
 ```
 
+Functions:
+
+
 Loading in the data set "malaria_data.csv." The data set contains malaria related deaths in different countries in relation to age. 
 ```{r, include=T}
-knitr::opts_chunk$set(echo = TRUE)
 
 #Loading in the csv file. 
 malaria <- read.csv("malaria_data_2.csv", skip = 1)
@@ -54,16 +54,16 @@ malaria$Entity[5293:5348] <- "China"
 #Making sure the data is numeric for calculations.
 malaria$Entity <- factor(malaria$Entity) 
 #Cleaning up the column names, removing unneeded columns, and omitting any NA values.
-malaria <- clean_names(malaria)
-malaria <- subset(malaria, select = -2) %>% 
-  na.omit(malaria)
+malaria <- malaria %>% clean_names() %>%
+  subset( select = -2) %>% 
+  na.omit()
 
 for(i in 1990:2017){
   clean.malaria <- malaria[malaria$year==i,] #Isolating specific year
   rownames(clean.malaria) <- seq(length=nrow(clean.malaria)) #Renumbering rows
-  clean.malaria <- rowSums(clean.malaria[1:230,3:7]) #Summing up the columns for each country. 
-  malaria.all.forloop <- assign(paste0("malaria.all.",i), clean.malaria) 
-  malaria.country <- data.frame("region" = malaria[,1], "deaths" = malaria.all.forloop) 
+  clean.malaria$deaths <- rowSums(clean.malaria[1:230,3:7]) #Summing up the columns for each country. 
+  malaria.forloop <- assign(paste0("malaria.all.",i), clean.malaria) 
+  malaria.country <- data.frame("region" = clean.malaria[,1], "deaths" = malaria.forloop$deaths) 
   assign(paste0("malaria.all.",i),malaria.country) #combining the data with a df of countries.
 }
 ```
@@ -89,8 +89,31 @@ wtihout_canvas = ggplot(d, aes(long, lat, group=group))+
 ggsave(save.name,height = 6, width=9)
 }
 
+ mapdata <- map_data("world")
+  d <- malaria.all.1990 %>%
+  right_join(mapdata, by= "region") %>%
+  group_by(region)%>% 
+  filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
+
+d <- subset(d, select = -7)
+d$deaths <- log(d$deaths)
+
+wtihout_canvas = ggplot(d, aes(long, lat, group=group))+
+  geom_polygon(aes(fill=deaths), na.rm="black")+ 
+  scale_fill_viridis(name = "Number of Deaths", breaks = c(2,10), labels=c("Low death rates", "High death rates"), limits = c(0,12))+
+  labs(title = paste("Average Number of Malaria Related Deaths in Different Countries (Year:",year,")"),
+       caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **")+
+  theme_void()
+ggsave(save.name,height = 6, width=9)
+
+
+
+as.character()
+
+
+
 for(i in 1990:2017){
-  df.year <- paste0("malaria.all.",i)
+  df.year <- paste0("malaria.all.",i) #it is not assigning the dataframe. It is asigning a character.
   year <- i
   save.name <- paste0("Mo-NewPlot.",i,".png")
   Malaria.Map.F(df.year,year,save.name)
