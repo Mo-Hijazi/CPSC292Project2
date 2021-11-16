@@ -10,7 +10,7 @@ author: "Mo Hijazi"
 date: "10/12/2021"
 output: html_document
 ---
-```{r}
+```{r warning=FALSE}
 # All libraries required for code.
 library(ggplot2)
 library(reshape2)
@@ -30,6 +30,28 @@ library(magrittr)
 ```
 
 Functions:
+```{r}
+# This function creates a malaria map for a specific year.
+Malaria.Map.F <- function(df.year,year,save.name){ 
+  mapdata <- map_data("world")
+  d <- df.year %>%
+  right_join(mapdata, by= "region") %>%
+  group_by(region)%>% 
+  filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
+
+d <- subset(d, select = -7)
+d$deaths <- log(d$deaths)
+
+wtihout_canvas = ggplot(d, aes(long, lat, group=group))+
+  geom_polygon(aes(fill=deaths), na.rm="black")+ 
+  scale_fill_viridis(name = "Number of Deaths", breaks = c(2,10), labels=c("Low death rates", "High death rates"), limits = c(0,12))+
+  labs(title = paste("Average Number of Malaria Related Deaths in Different Countries (Year:",year,")"),
+       caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **")+
+  theme_void()
+ggsave(save.name,height = 6, width=9)
+}
+
+```
 
 
 Loading in the data set "malaria_data.csv." The data set contains malaria related deaths in different countries in relation to age. 
@@ -70,25 +92,6 @@ for(i in 1990:2017){
 
 Combining world map data with my data to create visual:
 ```{r echo=FALSE}
-Malaria.Map.F <- function(df.year,year,save.name){ 
-  mapdata <- map_data("world")
-  d <- df.year %>%
-  right_join(mapdata, by= "region") %>%
-  group_by(region)%>% 
-  filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
-
-d <- subset(d, select = -7)
-d$deaths <- log(d$deaths)
-
-wtihout_canvas = ggplot(d, aes(long, lat, group=group))+
-  geom_polygon(aes(fill=deaths), na.rm="black")+ 
-  scale_fill_viridis(name = "Number of Deaths", breaks = c(2,10), labels=c("Low death rates", "High death rates"), limits = c(0,12))+
-  labs(title = paste("Average Number of Malaria Related Deaths in Different Countries (Year:",year,")"),
-       caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **")+
-  theme_void()
-ggsave(save.name,height = 6, width=9)
-}
-
  mapdata <- map_data("world")
   d <- malaria.all.1990 %>%
   right_join(mapdata, by= "region") %>%
