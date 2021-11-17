@@ -36,17 +36,17 @@ Malaria.Map.F <- function(df.year,year,save.name){
   mapdata <- map_data("world")
   d <- df.year %>%
   right_join(mapdata, by= "region") %>%
-  group_by(region)%>% 
+  group_by(region) %>% 
   filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
 
 d <- subset(d, select = -7)
 d$deaths <- log(d$deaths)
 
-wtihout_canvas = ggplot(d, aes(long, lat, group=group))+
-  geom_polygon(aes(fill=deaths), na.rm="black")+ 
-  scale_fill_viridis(name = "Number of Deaths", breaks = c(2,10), labels=c("Low death rates", "High death rates"), limits = c(0,12))+
+wtihout_canvas = ggplot(d, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = deaths), na.rm ="black") + 
+  scale_fill_viridis(name = "Number of Deaths", breaks = c(2,10), labels = c("Low death rates", "High death rates"), limits = c(0,12)) +
   labs(title = paste("Average Number of Malaria Related Deaths in Different Countries (Year:",year,")"),
-       caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **")+
+       caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **") +
   theme_void()
 ggsave(save.name,height = 6, width=9)
 }
@@ -81,9 +81,9 @@ malaria <- malaria %>% clean_names() %>%
   na.omit()
 
 for(i in 1990:2017){
-  clean.malaria <- malaria[malaria$year==i,] #Isolating specific year
-  rownames(clean.malaria) <- seq(length=nrow(clean.malaria)) #Renumbering rows
-  clean.malaria$deaths <- rowSums(clean.malaria[1:230,3:7]) #Summing up the columns for each country. 
+  clean.malaria <- malaria[malaria$year == i, ] #Isolating specific year
+  rownames(clean.malaria) <- seq(length = nrow(clean.malaria)) #Renumbering rows
+  clean.malaria$deaths <- rowSums(clean.malaria[1:230, 3:7]) #Summing up the columns for each country. 
   malaria.forloop <- assign(paste0("malaria.all.",i), clean.malaria) 
   malaria.country <- data.frame("region" = clean.malaria[,1], "deaths" = malaria.forloop$deaths) 
   assign(paste0("malaria.all.",i),malaria.country) #combining the data with a df of countries.
@@ -94,19 +94,22 @@ Combining world map data with my data to create visual:
 ```{r echo=FALSE}
  mapdata <- map_data("world")
   d <- malaria.all.1990 %>%
-  right_join(mapdata, by= "region") %>%
-  group_by(region)%>% 
+  right_join(mapdata, by = "region") %>%
+  group_by(region) %>% 
   filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
   year <- 1990
 d <- subset(d, select = -7)
 d$deaths <- log(d$deaths)
-wtihout_canvas = ggplot(d, aes(long, lat, group=group))+
-  geom_polygon(aes(fill=deaths), na.rm="black")+ 
-  scale_fill_viridis(name = "Number of Deaths", breaks = c(2,10), labels=c("Low death rates", "High death rates"), limits = c(0,12))+
+wtihout_canvas = ggplot(d, aes(long, lat, group=group)) +
+  geom_polygon(aes(fill = deaths), na.rm = "black")+ 
+  scale_fill_viridis(name = "Number of Deaths", 
+                     breaks = c(2,10), 
+                     labels = c("Low death rates", "High death rates"), 
+                     limits = c(0,12)) +
   labs(title = paste("Average Number of Malaria Related Deaths in Different Countries (Year:",year,")"),
        caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **")+
   theme_void()
-ggsave(save.name,height = 6, width=9)
+ggsave(save.name, height = 6, width = 9)
 
 for(i in 1990:2017){
   df.year <- paste0("malaria.all.",i)
@@ -121,38 +124,29 @@ assign("df.year",eval(as.name(df.year)))
 list.files(pattern = '*.png', full.names = TRUE) %>% 
         image_read() %>% # reads each path file
         image_join() %>% # joins image
-        image_animate(fps=1) %>% # animates, can opt for number of loops
+        image_animate(fps = 1) %>% # animates, can opt for number of loops
         image_write("Mo-AnimatedMap.gif") # write to current dir
 ```
-***UPDATES FOR VISUAL 1***
-Hannah Sukhdeo, Sarah Fraschetti, Azure Gilmore: I log-ed all death values making the range of deaths much more compact. This created a better representation with the color gradient I used. 
-
-I used the "without_canvas" function to reduce amount of computing needed when creating the map. This reduced the time from ~25 minutes to ~15 seconds! YAY!
-
-I added a title and a caption describing the gray regions of the map. 
-
-I animated the map by year! (For this I had to save the maps for each year as a PNG which took forever. I noticed saving to PDF took way less time; however, I couldn't get R to convert from PDF to PNG.)
 
 VISUAL 2:
 ```{r, include=T}
 #Loading in the csv file. 
 Visual2malaria <- read.csv("malaria_data.csv", skip = 1)
 #creating a data frame with just "world" death counts
-Visual2malaria <- data.frame(Visual2malaria[6357:6384,]) 
+Visual2malaria <- data.frame(Visual2malaria[6357:6384, ]) 
 #Removing unneeded columns
 Visual2malaria <- subset(Visual2malaria, select = -2)
 Visual2malaria <- subset(Visual2malaria, select = -1)
 #making year counts as characters for easier visual edits. 
 Visual2malaria$Year <- as.character(Visual2malaria$Year)
 #Combining column deaths. 
-total.deaths <- rowSums(Visual2malaria[,2:6])
+total.deaths <- rowSums(Visual2malaria[, 2:6])
 year <- Visual2malaria$Year
 #Creating a new data fram with years and total deaths.
 malaria.world <- cbind(year, total.deaths)
 malaria.world <- as.data.frame(malaria.world)
 
 ```
-
 
 ```{r, include=T}
 #Making all death counts into numeric values.
@@ -169,10 +163,6 @@ ggplot(malaria.world, aes(x= year, y= total.deaths, fill = year))+
   theme(legend.position = "none")+ 
   theme(plot.title = element_text(hjust = 0.5))
 ```
-***UPDATE***
-Hannah Sukhdeo: You mentioned to add percentages to each of the brag graph I don't think this would be proper for this visual as each graph is a total number of deaths for each year.
-
-
 ------------------------------------------------------------------------------------------------------------------------
 ***Resources***
 https://stackoverflow.com/questions/61838700/query-on-how-to-make-world-heat-map-using-ggplot-in-r
