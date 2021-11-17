@@ -10,7 +10,7 @@ author: "Mo Hijazi"
 date: "10/12/2021"
 output: html_document
 ---
-```{r warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 # All libraries required for code.
 library(ggplot2)
 library(reshape2)
@@ -29,26 +29,31 @@ library(magick)
 library(magrittr)
 ```
 
-Functions:
+Function(s):
 ```{r}
 # This function creates a malaria map for a specific year.
 Malaria.Map.F <- function(df.year,year,save.name){ 
+  #df.year = the data frame to be used for the map.
+  #year = the year the map will represent
+  #save.name = the file name the map should be saved as. 
+#Saving the world map data to the data frame "mapdata."
   mapdata <- map_data("world")
-  d <- df.year %>%
+  intermediate_malaria <- df.year %>% #Assigning the "malaria.all.x" data frame to "d" which is a intermediate data frame. 
   right_join(mapdata, by= "region") %>%
-  group_by(region) %>% 
+  group_by(region) %>% #Groups the malria data witht he world map using regions. 
   filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
 
-d <- subset(d, select = -7)
-d$deaths <- log(d$deaths)
-
-wtihout_canvas = ggplot(d, aes(long, lat, group = group)) +
+intermediate_malaria <- subset(intermediate_malaria, select = -7) #Removing unneeded columns.
+intermediate_malaria$deaths <- log(intermediate_malaria$deaths) #Loging all deaths to create a better visual representation. 
+#Creating the map using virdis colors.
+wtihout_canvas = ggplot(intermediate_malaria , aes(long, lat, group = group)) +
   geom_polygon(aes(fill = deaths), na.rm ="black") + 
   scale_fill_viridis(name = "Number of Deaths", breaks = c(2,10), labels = c("Low death rates", "High death rates"), limits = c(0,12)) +
   labs(title = paste("Average Number of Malaria Related Deaths in Different Countries (Year:",year,")"),
        caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **") +
   theme_void()
-ggsave(save.name,height = 6, width=9)
+#Saving the map to a folder called "results."
+ggsave(path = "results", save.name,height = 6, width=9) 
 }
 
 ```
@@ -56,9 +61,8 @@ ggsave(save.name,height = 6, width=9)
 
 Loading in the data set "malaria_data.csv." The data set contains malaria related deaths in different countries in relation to age. 
 ```{r, include=T}
-
 #Loading in the csv file. 
-malaria <- read.csv("malaria_data_2.csv", skip = 1)
+malaria <- read.csv("data/malaria_data_2.csv", skip = 1)
 ```
 
 Cleaning up the data set: 
@@ -86,31 +90,13 @@ for(i in 1990:2017){
   clean.malaria$deaths <- rowSums(clean.malaria[1:230, 3:7]) #Summing up the columns for each country. 
   malaria.forloop <- assign(paste0("malaria.all.",i), clean.malaria) 
   malaria.country <- data.frame("region" = clean.malaria[,1], "deaths" = malaria.forloop$deaths) 
-  assign(paste0("malaria.all.",i),malaria.country) #combining the data with a df of countries.
+  assign(paste0("malaria.all.",i), malaria.country) #combining the data with a df of countries.
 }
 ```
 
 Combining world map data with my data to create visual:
 ```{r echo=FALSE}
- mapdata <- map_data("world")
-  d <- malaria.all.1990 %>%
-  right_join(mapdata, by = "region") %>%
-  group_by(region) %>% 
-  filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
-  year <- 1990
-d <- subset(d, select = -7)
-d$deaths <- log(d$deaths)
-wtihout_canvas = ggplot(d, aes(long, lat, group=group)) +
-  geom_polygon(aes(fill = deaths), na.rm = "black")+ 
-  scale_fill_viridis(name = "Number of Deaths", 
-                     breaks = c(2,10), 
-                     labels = c("Low death rates", "High death rates"), 
-                     limits = c(0,12)) +
-  labs(title = paste("Average Number of Malaria Related Deaths in Different Countries (Year:",year,")"),
-       caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **")+
-  theme_void()
-ggsave(save.name, height = 6, width = 9)
-
+#This for loop runs the function "Malria.Map.F" for each of the malaria data frames to create a map for each year.
 for(i in 1990:2017){
   df.year <- paste0("malaria.all.",i)
 assign("df.year",eval(as.name(df.year)))
@@ -120,18 +106,21 @@ assign("df.year",eval(as.name(df.year)))
 }
 ```
 
+Animating the maps as a gif. 
 ```{r}
-list.files(pattern = '*.png', full.names = TRUE) %>% 
+list.files(path = "results", pattern = '*.png', full.names = TRUE) %>% 
         image_read() %>% # reads each path file
         image_join() %>% # joins image
         image_animate(fps = 1) %>% # animates, can opt for number of loops
         image_write("Mo-AnimatedMap.gif") # write to current dir
+file.copy(from = "Mo-AnimatedMap.gif", to = "results")
+file.remove("Mo-AnimatedMap.gif")
 ```
 
 VISUAL 2:
 ```{r, include=T}
 #Loading in the csv file. 
-Visual2malaria <- read.csv("malaria_data.csv", skip = 1)
+Visual2malaria <- read.csv("data/malaria_data.csv", skip = 1)
 #creating a data frame with just "world" death counts
 Visual2malaria <- data.frame(Visual2malaria[6357:6384, ]) 
 #Removing unneeded columns
@@ -166,22 +155,39 @@ ggplot(malaria.world, aes(x= year, y= total.deaths, fill = year))+
 ------------------------------------------------------------------------------------------------------------------------
 ***Resources***
 https://stackoverflow.com/questions/61838700/query-on-how-to-make-world-heat-map-using-ggplot-in-r
+
 https://stackoverflow.com/questions/42683522/r-how-to-sum-a-variable-by-certain-levels-contained-in-a-list-of-another-varia
+
 https://www.youtube.com/watch?v=AgWgPSZ7Gp0
+
 https://stackoverflow.com/questions/13353213/gradient-of-n-colors-ranging-from-color-1-and-color-2
+
 https://stackoverflow.com/questions/60268389/china-not-showing-on-chloropleth-map-in-r
+
 https://www.youtube.com/watch?v=AgWgPSZ7Gp0
+
 https://www.datanovia.com/en/blog/how-to-remove-legend-from-a-ggplot/
+
 https://www.datanovia.com/en/lessons/rename-data-frame-columns-in-r/
+
 http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization
+
 https://www.r-graph-gallery.com/218-basic-barplots-with-ggplot2.html
+
 https://stackoverflow.com/questions/1330989/rotating-and-spacing-axis-labels-in-ggplot2
+
 https://www.datanovia.com/en/blog/how-to-set-ggplot-breaks/
+
 http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+
 https://stackoverflow.com/questions/40675778/center-plot-title-in-ggplot2
+
 https://statisticsglobe.com/change-formatting-of-numbers-of-ggplot2-plot-axis-in-r
+
 https://stackoverflow.com/questions/13701347/force-the-origin-to-start-at-0
+
 https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/
+
 https://stackoverflow.com/questions/56389470/convert-multiple-png-to-gif-as-an-animation-in-r
 
 
