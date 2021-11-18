@@ -1,0 +1,153 @@
+---
+title: "TEST PROJECT"
+author: "Mo Hijazi"
+date: "10/16/2021"
+output: html_document
+---
+---
+title: "Project 1 - Malaria"
+author: "Mo Hijazi"
+date: "10/12/2021"
+output: html_document
+---
+```{r message=FALSE, warning=FALSE}
+# All libraries required for code.
+library(ggplot2)
+library(reshape2)
+library(tidyr)
+library(janitor)
+library(viridis)
+library(viridisLite)
+library(maps)
+library(tidyverse)
+library(scales)
+library(gifski)
+library(dplyr)
+library(ggthemes)
+library(readr)
+library(magick)
+library(magrittr)
+```
+
+Function(s):
+```{r}
+# This function creates a malaria map for a specific year.
+Malaria.Map.F <- function(df.year,year,save.name){ 
+  #df.year = the data frame to be used for the map.
+  #year = the year the map will represent
+  #save.name = the file name the map should be saved as. 
+#Saving the world map data to the data frame "mapdata."
+  mapdata <- map_data("world")
+  intermediate_malaria <- df.year %>% #Assigning the "malaria.all.x" data frame to "d" which is a intermediate data frame. 
+  right_join(mapdata, by= "region") %>%
+  group_by(region) %>% #Groups the malria data witht he world map using regions. 
+  filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
+
+intermediate_malaria <- subset(intermediate_malaria, select = -7) #Removing unneeded columns.
+intermediate_malaria$deaths <- log(intermediate_malaria$deaths) #Loging all deaths to create a better visual representation. 
+#Creating the map using virdis colors.
+wtihout_canvas = ggplot(intermediate_malaria , aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = deaths), na.rm ="black") + 
+  scale_fill_viridis(name = "Number of Deaths", breaks = c(2,10), labels = c("Low death rates", "High death rates"), limits = c(0,12)) +
+  labs(title = paste("Average Number of Malaria Related Deaths in Different Countries (Year:",year,")"),
+       caption = "** Gray regions do not have malaria deaths or data pretaining to number of malaria deaths **") +
+  theme_void()
+#Saving the map to a folder called "results."
+ggsave(path = "results", save.name,height = 6, width=9) 
+}
+
+```
+
+Loading in the data set "malaria_data.csv." The data set contains malaria related deaths in different countries in relation to age. 
+```{r, include=T}
+#Loading in the csv file. 
+malaria <- read.csv("data/malaria_data_2.csv", skip = 1)
+```
+
+Cleaning up the data set: 
+```{r, include=T}
+#Renaming specific countries on the data to match the world map names.
+malaria$Entity[1401:1428] <- "Ivory Coast"
+malaria$Entity[1345:1372] <- "Democratic Republic of the Congo"
+malaria$Entity[1541:1568] <- "Democratic Republic of the Congo"
+malaria$Entity[1065:1092] <- "China"
+malaria$Entity[1121:1148] <- "Spain"
+malaria$Entity[1681:1708] <- "China"
+malaria$Entity[5209:5236] <- "China"
+malaria$Entity[5293:5348] <- "China"
+
+#Making sure the data is numeric for calculations.
+malaria$Entity <- factor(malaria$Entity) 
+#Cleaning up the column names, removing unneeded columns, and omitting any NA values.
+malaria <- malaria %>% clean_names() %>%
+  subset( select = -2) %>% 
+  na.omit()
+
+for(i in 1990:2017){
+  clean.malaria <- malaria[malaria$year == i, ] #Isolating specific year
+  rownames(clean.malaria) <- seq(length = nrow(clean.malaria)) #Renumbering rows
+  clean.malaria$deaths <- rowSums(clean.malaria[1:230, 3:7]) #Summing up the columns for each country. 
+  malaria.forloop <- assign(paste0("malaria.all.",i), clean.malaria) 
+  malaria.country <- data.frame("region" = clean.malaria[,1], "deaths" = malaria.forloop$deaths) 
+  assign(paste0("malaria.all.",i), malaria.country) #combining the data with a df of countries.
+}
+```
+
+Combining world map data with my data to create visual:
+```{r echo=FALSE}
+#This for loop runs the function "Malria.Map.F" for each of the malaria data frames to create a map for each year.
+for(i in 1990:2017){
+  df.year <- paste0("malaria.all.",i)
+  assign("df.year",eval(as.name(df.year)))
+    year <- i
+    save.name <- paste0("Mo-NewPlot.",i,".png")
+    Malaria.Map.F(df.year,year,save.name)
+}
+```
+
+Animating the maps as a gif. 
+```{r}
+list.files(path = "results", pattern = '*.png', full.names = TRUE) %>% 
+        image_read() %>% # reads each path file
+        image_join() %>% # joins image
+        image_animate(fps = 1) %>% 
+        image_write("Mo-AnimatedMap.gif") # write to current dir
+
+file.copy(from = "Mo-AnimatedMap.gif", to = "results") #Moves the files to results folder.
+file.remove("Mo-AnimatedMap.gif") #Remove the gif from the original directory. 
+```
+
+VISUAL 2:
+```{r, include=T}
+#Loading in the csv file. 
+Visual2malaria <- read.csv("data/malaria_data.csv", skip = 1)
+#creating a data frame with just "world" death counts
+Visual2malaria <- data.frame(Visual2malaria[6357:6384, ]) 
+#Removing unneeded columns
+Visual2malaria <- subset(Visual2malaria, select = -2)
+Visual2malaria <- subset(Visual2malaria, select = -1)
+#making year counts as characters for easier visual edits. 
+Visual2malaria$Year <- as.character(Visual2malaria$Year)
+#Combining column deaths. 
+total.deaths <- rowSums(Visual2malaria[, 2:6])
+year <- Visual2malaria$Year
+#Creating a new data fram with years and total deaths.
+malaria.world <- cbind(year, total.deaths)
+malaria.world <- as.data.frame(malaria.world)
+```
+
+```{r, include=T}
+#Making all death counts into numeric values.
+malaria.world$total.deaths <- as.numeric(malaria.world$total.deaths)
+#Creating bar graph and making aes edits to bar graph.
+ggplot(malaria.world, aes(x = year, y = total.deaths, fill = year))+
+  theme_dark() +
+  geom_bar(stat = "identity") + 
+  theme(text = element_text(size = 10),
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_continuous(name = "Total Deaths", breaks= seq(0,1500000, by = 100000), labels = comma, expand = c(0, 0))+
+  xlab("Year") +
+  ggtitle("Total Malaria Deaths per Year") +
+  theme(legend.position = "none") + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
