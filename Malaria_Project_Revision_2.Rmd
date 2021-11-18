@@ -1,5 +1,5 @@
 ---
-title: "TEST PROJECT"
+title: "Project 2"
 author: "Mo Hijazi"
 date: "10/16/2021"
 output: html_document
@@ -188,6 +188,3 @@ https://stackoverflow.com/questions/13701347/force-the-origin-to-start-at-0
 https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/
 
 https://stackoverflow.com/questions/56389470/convert-multiple-png-to-gif-as-an-animation-in-r
-
-
-
