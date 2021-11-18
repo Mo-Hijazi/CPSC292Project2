@@ -11,6 +11,8 @@ Although the function helped alleviate the tedious edits we had to do for each m
 Please note that all results for visual 1 can be found in the folder “results.” The graph created for visual 2 is presented on the RMD file when the code is run. 
 
 If any questions, concerns, or bugs arise, please feel free to reach out to us:
+
 Mo Hijazi - mhijazi@chapman.edu
+
 Todd Soo- tsoo@chapman.edu
 
