@@ -111,10 +111,10 @@ Animating the maps as a gif.
 list.files(path = "results", pattern = '*.png', full.names = TRUE) %>% 
         image_read() %>% # reads each path file
         image_join() %>% # joins image
-        image_animate(fps = 1) %>% # animates, can opt for number of loops
+        image_animate(fps = 1) %>% 
         image_write("Mo-AnimatedMap.gif") # write to current dir
-file.copy(from = "Mo-AnimatedMap.gif", to = "results")
-file.remove("Mo-AnimatedMap.gif")
+file.copy(from = "Mo-AnimatedMap.gif", to = "results") #Moves the files to results folder.
+file.remove("Mo-AnimatedMap.gif") #Remove the gif from the original directory. 
 ```
 
 VISUAL 2:
@@ -134,7 +134,6 @@ year <- Visual2malaria$Year
 #Creating a new data fram with years and total deaths.
 malaria.world <- cbind(year, total.deaths)
 malaria.world <- as.data.frame(malaria.world)
-
 ```
 
 ```{r, include=T}
