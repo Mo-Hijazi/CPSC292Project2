@@ -140,15 +140,15 @@ malaria.world <- as.data.frame(malaria.world)
 #Making all death counts into numeric values.
 malaria.world$total.deaths <- as.numeric(malaria.world$total.deaths)
 #Creating bar graph and making aes edits to bar graph.
-ggplot(malaria.world, aes(x= year, y= total.deaths, fill = year))+
-  theme_dark()+
-  geom_bar(stat = "identity")+ 
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=90, hjust=1))+
-  scale_y_continuous(name="Total Deaths", breaks= seq(0,1500000, by= 100000), labels = comma, expand = c(0, 0))+
-  xlab("Year")+
-  ggtitle("Total Malaria Deaths per Year")+
-  theme(legend.position = "none")+ 
+ggplot(malaria.world, aes(x = year, y = total.deaths, fill = year))+
+  theme_dark() +
+  geom_bar(stat = "identity") + 
+  theme(text = element_text(size = 10),
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_continuous(name = "Total Deaths", breaks= seq(0,1500000, by = 100000), labels = comma, expand = c(0, 0))+
+  xlab("Year") +
+  ggtitle("Total Malaria Deaths per Year") +
+  theme(legend.position = "none") + 
   theme(plot.title = element_text(hjust = 0.5))
 ```
 ------------------------------------------------------------------------------------------------------------------------
