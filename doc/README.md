@@ -16,3 +16,43 @@ Mo Hijazi - mhijazi@chapman.edu
 
 Todd Soo- tsoo@chapman.edu
 
+
+
+Resources
+
+https://stackoverflow.com/questions/61838700/query-on-how-to-make-world-heat-map-using-ggplot-in-r
+
+https://stackoverflow.com/questions/42683522/r-how-to-sum-a-variable-by-certain-levels-contained-in-a-list-of-another-varia
+
+https://www.youtube.com/watch?v=AgWgPSZ7Gp0
+
+https://stackoverflow.com/questions/13353213/gradient-of-n-colors-ranging-from-color-1-and-color-2
+
+https://stackoverflow.com/questions/60268389/china-not-showing-on-chloropleth-map-in-r
+
+https://www.youtube.com/watch?v=AgWgPSZ7Gp0
+
+https://www.datanovia.com/en/blog/how-to-remove-legend-from-a-ggplot/
+
+https://www.datanovia.com/en/lessons/rename-data-frame-columns-in-r/
+
+http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization
+
+https://www.r-graph-gallery.com/218-basic-barplots-with-ggplot2.html
+
+https://stackoverflow.com/questions/1330989/rotating-and-spacing-axis-labels-in-ggplot2
+
+https://www.datanovia.com/en/blog/how-to-set-ggplot-breaks/
+
+http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+
+https://stackoverflow.com/questions/40675778/center-plot-title-in-ggplot2
+
+https://statisticsglobe.com/change-formatting-of-numbers-of-ggplot2-plot-axis-in-r
+
+https://stackoverflow.com/questions/13701347/force-the-origin-to-start-at-0
+
+https://www.datasciencemadesimple.com/delete-or-drop-rows-in-r-with-conditions-2/
+
+https://stackoverflow.com/questions/56389470/convert-multiple-png-to-gif-as-an-animation-in-r
+
